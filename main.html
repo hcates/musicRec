@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <title>Tunes-For-You</title>
     <link rel="stylesheet" href="base.css">
-    <script src="base.js"></script>
 </head>
 <body>
 <div>
     Enter up to three song titles:
 </div>
 <br>
+<script>
+    let a, b, c;
+</script>
 <form onSubmit="onSubmit()">
     Song 1:<br>
     <input type="text" name="songOne"><br>
@@ -22,6 +24,24 @@
     <input type="submit">
 </form>
 <br>
+<script>
+    function onSubmit() {
+        a = document.getElementsByName("songOne")[0].value;
+        b = document.getElementsByName("songTwo")[0].value;
+        c = document.getElementsByName("songThree")[0].value;
+        $.ajax({
+            url: "https://api.spotify.com/v1/recommendations",
+            method: "GET",
+            data: {a, b, c},
+        }).then(res => {
+            res.json().then(data => {
+                for (i = 0; i < 20; i++) {
+                    // Do Stuff
+                }
+            });
+        });
+    }
+</script>
 <table id="results">
 
 </table>
