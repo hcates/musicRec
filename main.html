@@ -33,17 +33,21 @@
             url: "https://api.spotify.com/v1/recommendations",
             method: "GET",
             data: {a, b, c},
+            headers: {
+                "Authorization": "TODO"
+            }
         }).then(res => {
             res.json().then(data => {
+                let list = document.getElementById("results");
                 for (i = 0; i < 20; i++) {
-                    // Do Stuff
+                    var entry = document.createElement('li');
+                    list.appendChild(entry);
                 }
             });
         });
     }
 </script>
-<table id="results">
-
-</table>
+<ol id="results">
+</ol>
 </body>
 </html>
