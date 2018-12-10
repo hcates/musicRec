@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <title>tunes4you</title>
     <link rel="stylesheet" href="base.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 <body>
 <div>
-    Enter up to three song titles:
+    Enter up to three artists:
 </div>
 <br>
-<form onSubmit="onSubmit()">
+<form id="recForm">
     Artist 1:<br>
     <input type="text" name="artistOne"><br>
     Artist 2:<br>
@@ -18,24 +19,55 @@
     Artist 3: <br>
     <input type="text" name="artistThree"><br>
     <br>
-    <input type="submit">
+    <input type="button" onclick="onSubmit()" value="Submit">
 </form>
 <br>
 <script>
     function onSubmit() {
+
+        let token = "";
+
+        $.ajax({
+            url: "https://accounts.spotify.com/api/token",
+            method: "POST",
+            body: {
+                "grant_type": "client_credentials"
+            },
+            headers: {
+                "Authorization": "Basic 9e5a220335ce4a0f84976771850e0c55:61254f20eea94b1ba1b79234ce60b83f"
+            }
+        }).then(res => {
+            res.json().then(data => {
+                if (res.ok) {
+                    token = data.access_token;
+                    console.log("token: " + token);
+                } else {
+                    console.log("token error");
+                }
+
+            });
+        });
+
         let a1 = document.getElementsByName("artistOne")[0].value;
         let a2 = document.getElementsByName("artistTwo")[0].value;
         let a3 = document.getElementsByName("artistThree")[0].value;
+
+        let seedString = "";
 
         $.ajax({
             url: "https://api.spotify.com/v1/search?q=" + a1 + "&type=artist",
             method: "GET",
             headers: {
-                "Authorization": "TODO"
+                "Authorization": token
             }
         }).then(res => {
             res.json().then(data => {
-                a1 = data[0].id;
+                if (res.ok) {
+                    a1 = data[0].id;
+                    seedString = a1;
+                } else {
+                    console.log("a1 error");
+                }
             });
         });
 
@@ -43,11 +75,16 @@
             url: "https://api.spotify.com/v1/search?q=" + a2 + "&type=artist",
             method: "GET",
             headers: {
-                "Authorization": "TODO"
+                "Authorization": token
             }
         }).then(res => {
             res.json().then(data => {
-                a2 = data[0].id;
+                if (res.ok) {
+                    a2 = data[0].id;
+                    seedString = seedString + "," + a2;
+                } else {
+                    console.log("a2 error");
+                }
             });
         });
 
@@ -55,30 +92,40 @@
             url: "https://api.spotify.com/v1/search?q=" + a3 + "&type=artist",
             method: "GET",
             headers: {
-                "Authorization": "TODO"
+                "Authorization": token
             }
         }).then(res => {
             res.json().then(data => {
-                a3 = data[0].id;
+                if (res.ok) {
+                    a3 = data[0].id;
+                    seedString = seedString + "," + a3;
+                } else {
+                    console.log("a3 error");
+                }
             });
         });
 
         $.ajax({
-            url: "https://api.spotify.com/v1/recommendations?seed_artists=" + a1 + "," + a2 + "," + a3,
+            url: "https://api.spotify.com/v1/recommendations?seed_artists=" + seedString,
             method: "GET",
             headers: {
-                "Authorization": "TODO"
+                "Authorization": token
             }
         }).then(res => {
             res.json().then(data => {
-                let list = document.getElementById("results");
-                for (i = 0; i < 20; i++) {
-                    var entry = document.createElement('li');
-                    entry.innerText(data[0][i].name);
-                    list.appendChild(entry);
+                if (res.ok) {
+                    let list = document.getElementById("results");
+                    for (i = 0; i < 20; i++) {
+                        var entry = document.createElement('li');
+                        entry.innerHTML(data[0][i].name);
+                        list.appendChild(entry);
+                    }
+                } else {
+                    console.log("rec error");
                 }
             });
         });
+        return false;
     }
 </script>
 <ol id="results">
