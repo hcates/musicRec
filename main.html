@@ -58,7 +58,7 @@
             url: "https://api.spotify.com/v1/search?q=" + a1 + "&type=artist",
             method: "GET",
             headers: {
-                "Authorization": token
+                "Authorization": "Bearer " + token
             }
         }).then(res => {
             res.json().then(data => {
@@ -75,7 +75,7 @@
             url: "https://api.spotify.com/v1/search?q=" + a2 + "&type=artist",
             method: "GET",
             headers: {
-                "Authorization": token
+                "Authorization": "Bearer " + token
             }
         }).then(res => {
             res.json().then(data => {
@@ -92,7 +92,7 @@
             url: "https://api.spotify.com/v1/search?q=" + a3 + "&type=artist",
             method: "GET",
             headers: {
-                "Authorization": token
+                "Authorization": "Bearer " + token
             }
         }).then(res => {
             res.json().then(data => {
@@ -109,7 +109,7 @@
             url: "https://api.spotify.com/v1/recommendations?seed_artists=" + seedString,
             method: "GET",
             headers: {
-                "Authorization": token
+                "Authorization": "Bearer " + token
             }
         }).then(res => {
             res.json().then(data => {
