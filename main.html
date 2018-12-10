@@ -14,21 +14,24 @@
     let a, b, c;
 </script>
 <form onSubmit="onSubmit()">
-    Song 1:<br>
-    <input type="text" name="songOne"><br>
-    Song 2 (Optional):<br>
-    <input type="text" name="songTwo"><br>
-    Song 3 (Optional): <br>
-    <input type="text" name="songThree"><br>
+    Artist 1:<br>
+    <input type="text" name="artistOne"><br>
+    Artist 2:<br>
+    <input type="text" name="artistTwo"><br>
+    Artist 3: <br>
+    <input type="text" name="artistThree"><br>
     <br>
     <input type="submit">
 </form>
 <br>
 <script>
     function onSubmit() {
-        a = document.getElementsByName("songOne")[0].value;
-        b = document.getElementsByName("songTwo")[0].value;
-        c = document.getElementsByName("songThree")[0].value;
+        a1 = document.getElementsByName("artistOne")[0].value;
+        a2 = document.getElementsByName("artistTwo")[0].value;
+        a3 = document.getElementsByName("artistThree")[0].value;
+
+
+
         $.ajax({
             url: "https://api.spotify.com/v1/recommendations?seed_tracks=" + a + "," + b + "," + c,
             method: "GET",
