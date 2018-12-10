@@ -30,9 +30,8 @@
         b = document.getElementsByName("songTwo")[0].value;
         c = document.getElementsByName("songThree")[0].value;
         $.ajax({
-            url: "https://api.spotify.com/v1/recommendations",
+            url: "https://api.spotify.com/v1/recommendations?seed_tracks=" + a + "," + b + "," + c,
             method: "GET",
-            data: {a, b, c},
             headers: {
                 "Authorization": "TODO"
             }
