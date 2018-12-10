@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Tunes-For-You</title>
+    <title>tunes4you</title>
     <link rel="stylesheet" href="base.css">
 </head>
 <body>
@@ -10,9 +10,6 @@
     Enter up to three song titles:
 </div>
 <br>
-<script>
-    let a, b, c;
-</script>
 <form onSubmit="onSubmit()">
     Artist 1:<br>
     <input type="text" name="artistOne"><br>
@@ -26,14 +23,48 @@
 <br>
 <script>
     function onSubmit() {
-        a1 = document.getElementsByName("artistOne")[0].value;
-        a2 = document.getElementsByName("artistTwo")[0].value;
-        a3 = document.getElementsByName("artistThree")[0].value;
-
-
+        let a1 = document.getElementsByName("artistOne")[0].value;
+        let a2 = document.getElementsByName("artistTwo")[0].value;
+        let a3 = document.getElementsByName("artistThree")[0].value;
 
         $.ajax({
-            url: "https://api.spotify.com/v1/recommendations?seed_tracks=" + a + "," + b + "," + c,
+            url: "https://api.spotify.com/v1/search?q=" + a1 + "&type=artist",
+            method: "GET",
+            headers: {
+                "Authorization": "TODO"
+            }
+        }).then(res => {
+            res.json().then(data => {
+                a1 = data[0].id;
+            });
+        });
+
+        $.ajax({
+            url: "https://api.spotify.com/v1/search?q=" + a2 + "&type=artist",
+            method: "GET",
+            headers: {
+                "Authorization": "TODO"
+            }
+        }).then(res => {
+            res.json().then(data => {
+                a2 = data[0].id;
+            });
+        });
+
+        $.ajax({
+            url: "https://api.spotify.com/v1/search?q=" + a3 + "&type=artist",
+            method: "GET",
+            headers: {
+                "Authorization": "TODO"
+            }
+        }).then(res => {
+            res.json().then(data => {
+                a3 = data[0].id;
+            });
+        });
+
+        $.ajax({
+            url: "https://api.spotify.com/v1/recommendations?seed_artists=" + a1 + "," + a2 + "," + a3,
             method: "GET",
             headers: {
                 "Authorization": "TODO"
@@ -43,6 +74,7 @@
                 let list = document.getElementById("results");
                 for (i = 0; i < 20; i++) {
                     var entry = document.createElement('li');
+                    entry.innerText(data[0][i].name);
                     list.appendChild(entry);
                 }
             });
