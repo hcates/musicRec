@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>tunes4you</title>
-    <link rel="stylesheet" href="base.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 <body>
@@ -27,26 +26,22 @@
 
         let token = "";
 
-        $.ajax({
-            url: "https://accounts.spotify.com/api/token",
-            method: "POST",
-            body: {
-                "grant_type": "client_credentials"
-            },
-            headers: {
-                "Authorization": "Basic 9e5a220335ce4a0f84976771850e0c55:61254f20eea94b1ba1b79234ce60b83f"
-            }
-        }).then(res => {
-            res.json().then(data => {
-                if (res.ok) {
-                    token = data.access_token;
-                    console.log("token: " + token);
-                } else {
-                    console.log("token error");
-                }
+        var http = new XMLHttpRequest();
+        var url = 'https://accounts.spotify.com/api/token';
+        var params = 'grant_type=client_credentials';
+        http.open('POST', url, true);
 
-            });
-        });
+        http.setRequestHeader('Access-Control-Allow-Origin', "*");
+        http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        http.setRequestHeader('Authorization', 'Basic 9e5a220335ce4a0f84976771850e0c55:61254f20eea94b1ba1b79234ce60b83f');
+
+        http.onreadystatechange = function() {
+            if(http.readyState == 4 && http.status == 200) {
+                alert(http.responseText);
+                token = http.responseText;
+            }
+        };
+        http.send(params);
 
         let a1 = document.getElementsByName("artistOne")[0].value;
         let a2 = document.getElementsByName("artistTwo")[0].value;
