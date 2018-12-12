@@ -24,103 +24,80 @@
 <script>
     function onSubmit() {
 
-        let token = "";
-
-        var http = new XMLHttpRequest();
-        var url = 'https://accounts.spotify.com/api/token';
-        var params = 'grant_type=client_credentials';
-        http.open('POST', url, true);
-
-        http.setRequestHeader('Access-Control-Allow-Origin', "*");
-        http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-        http.setRequestHeader('Authorization', 'Basic 9e5a220335ce4a0f84976771850e0c55:61254f20eea94b1ba1b79234ce60b83f');
-
-        http.onreadystatechange = function() {
-            if(http.readyState == 4 && http.status == 200) {
-                alert(http.responseText);
-                token = http.responseText;
+        let token = "Bearer ";
+        $.ajax({
+            url: "/token",
+            method: "GET",
+            async: "false",
+            success: function(data) {
+                token = token + data;
             }
-        };
-        http.send(params);
+        });
 
         let a1 = document.getElementsByName("artistOne")[0].value;
         let a2 = document.getElementsByName("artistTwo")[0].value;
         let a3 = document.getElementsByName("artistThree")[0].value;
-
         let seedString = "";
 
         $.ajax({
-            url: "https://api.spotify.com/v1/search?q=" + a1 + "&type=artist",
+            url: "https://api.spotify.com/v1/search?q=" + a1 + "%20&type=artist",
             method: "GET",
             headers: {
-                "Authorization": "Bearer " + token
+                "Authorization": token
+            },
+            async: "false",
+            success: function (data) {
+                a1 = data.artists.items[0].id;
+                seedString = a1;
+                alert("one: " + seedString);
             }
-        }).then(res => {
-            res.json().then(data => {
-                if (res.ok) {
-                    a1 = data[0].id;
-                    seedString = a1;
-                } else {
-                    console.log("a1 error");
-                }
-            });
         });
 
         $.ajax({
-            url: "https://api.spotify.com/v1/search?q=" + a2 + "&type=artist",
+            url: "https://api.spotify.com/v1/search?q=" + a2 + "%20&type=artist",
             method: "GET",
             headers: {
-                "Authorization": "Bearer " + token
+                "Authorization": token
+            },
+            async: "false",
+            success: function (data) {
+                a2 = data.artists.items[0].id;
+                seedString = seedString + "," + a2;
+                alert("two: " + seedString);
             }
-        }).then(res => {
-            res.json().then(data => {
-                if (res.ok) {
-                    a2 = data[0].id;
-                    seedString = seedString + "," + a2;
-                } else {
-                    console.log("a2 error");
-                }
-            });
         });
 
         $.ajax({
-            url: "https://api.spotify.com/v1/search?q=" + a3 + "&type=artist",
+            url: "https://api.spotify.com/v1/search?q=" + a3 + "%20&type=artist",
             method: "GET",
             headers: {
-                "Authorization": "Bearer " + token
+                "Authorization": token
+            },
+            async: "false",
+            success: function (data) {
+                a3 = data.artists.items[0].id;
+                seedString = seedString + "," + a3;
+                alert("three: " + seedString);
             }
-        }).then(res => {
-            res.json().then(data => {
-                if (res.ok) {
-                    a3 = data[0].id;
-                    seedString = seedString + "," + a3;
-                } else {
-                    console.log("a3 error");
-                }
-            });
         });
 
-        $.ajax({
-            url: "https://api.spotify.com/v1/recommendations?seed_artists=" + seedString,
-            method: "GET",
-            headers: {
-                "Authorization": "Bearer " + token
-            }
-        }).then(res => {
-            res.json().then(data => {
-                if (res.ok) {
-                    let list = document.getElementById("results");
-                    for (i = 0; i < 20; i++) {
-                        var entry = document.createElement('li');
-                        entry.innerHTML(data[0][i].name);
-                        list.appendChild(entry);
-                    }
-                } else {
-                    console.log("rec error");
-                }
-            });
-        });
-        return false;
+        // $.ajax({
+        //     url: "https://api.spotify.com/v1/recommendations?seed_artists=" + seedString,
+        //     method: "GET",
+        //     headers: {
+        //         "Authorization": token
+        //     },
+        //     async: "false",
+        //     success: function (data) {
+        //         let list = document.getElementById("results");
+        //         for (i = 0; i < 20; i++) {
+        //             var entry = document.createElement('li');
+        //             entry.innerHTML(data[0][i].name);
+        //             list.appendChild(entry);
+        //         }
+        //     }
+        // });
+
     }
 </script>
 <ol id="results">
