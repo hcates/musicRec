@@ -5,6 +5,18 @@
     <title>tunes4you</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <style>
+        span {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2fr;
+            background-color: black;
+            color: white;
+            text-align: left;
+            padding-left: 1fr;
+        }
+
         body {
             background-color: #a263ff;
         }
@@ -37,6 +49,8 @@
     </style>
 </head>
 <body onload="getToken()">
+<span>tunes4you by harrison & arturo</span>
+<br>
 <h3>
     Welcome to tunes4you!
 </h3>
@@ -69,57 +83,66 @@
     // recommended songs from Spotify's api. These songs are then added to the "results" div.
     function onSubmit() {
 
-        // The first ajax call will search Spotify's database for an artist with the name entered from the user.
-        // The data returned from Spotify includes an id, which is stored in session storage for later use.
-        $.ajax({
-            url: "https://api.spotify.com/v1/search?q=" + document.getElementsByName("artistOne")[0].value + "%20&type=artist",
-            method: "GET",
-            async: "false",
-            headers: {
-                "Authorization": "Bearer " + sessionStorage.getItem('token')
-            },
-            success: function (data) {
-                sessionStorage.setItem('id', data.artists.items[0].id);
+        var list = document.getElementById("results");
 
-                // The second ajax call will use the previously found artist id as a seed to request 10 recommended songs
-                // These songs are returned as JSON object. The names of the artists, albums, and songs from the returned JSON object
-                // are then added as new divs in the results div.
-                //
-                // This ajax call is made after the success of the first ajax call in order to ensure synchronicity.
-                $.ajax({
-                    url: "https://api.spotify.com/v1/recommendations?limit=10&seed_artists=" + sessionStorage.getItem('id'),
-                    method: "GET",
-                    async: "false",
-                    headers: {
-                        "Authorization": "Bearer " + sessionStorage.getItem('token')
-                    },
-                    success: function (data) {
-                        for (i = 0; i < 10; i++) {
+        // Clear previous search results
+        while (list.firstChild) {
+            list.removeChild(list.firstChild);
+        }
 
-                            var text = JSON.stringify(data.tracks[i].album.artists[0].name).replace(/^"(.*)"$/, '$1') + " - " +
-                                JSON.stringify(data.tracks[i].album.name).replace(/^"(.*)"$/, '$1') + " - " +
-                                JSON.stringify(data.tracks[i].name).replace(/^"(.*)"$/, '$1');
+        if (document.getElementsByName('artistOne'[0].value)) {
 
-                            var entry = document.createElement('div'), entryText = document.createTextNode(text);
-                            var space = document.createElement('br'), link = document.createElement('a'), pic = document.createElement('img');
+            // The first ajax call will search Spotify's database for an artist with the name entered from the user.
+            // The data returned from Spotify includes an id, which is stored in session storage for later use.
+            $.ajax({
+                url: "https://api.spotify.com/v1/search?q=" + document.getElementsByName("artistOne")[0].value + "%20&type=artist",
+                method: "GET",
+                async: "false",
+                headers: {
+                    "Authorization": "Bearer " + sessionStorage.getItem('token')
+                },
+                success: function (data) {
+                    sessionStorage.setItem('id', data.artists.items[0].id);
 
-                            link.setAttribute('href', JSON.stringify(data.tracks[i].external_urls.spotify).replace(/^"(.*)"$/, '$1'));
-                            link.setAttribute('target', '_blank');
-                            pic.setAttribute('src', JSON.stringify(data.tracks[i].album.images[2].url).replace(/^"(.*)"$/, '$1'));
+                    // The second ajax call will use the previously found artist id as a seed to request 10 recommended songs
+                    // These songs are returned as JSON object. The names of the artists, albums, and songs from the returned JSON object
+                    // are then added as new divs in the results div.
+                    //
+                    // This ajax call is made after the success of the first ajax call in order to ensure synchronicity.
+                    $.ajax({
+                        url: "https://api.spotify.com/v1/recommendations?limit=10&seed_artists=" + sessionStorage.getItem('id'),
+                        method: "GET",
+                        async: "false",
+                        headers: {
+                            "Authorization": "Bearer " + sessionStorage.getItem('token')
+                        },
+                        success: function (data) {
+                            for (i = 0; i < 10; i++) {
+                                var text = JSON.stringify(data.tracks[i].album.artists[0].name).replace(/^"(.*)"$/, '$1') + " - " +
+                                    JSON.stringify(data.tracks[i].album.name).replace(/^"(.*)"$/, '$1') + " - " +
+                                    JSON.stringify(data.tracks[i].name).replace(/^"(.*)"$/, '$1');
 
-                            entry.appendChild(entryText);
-                            entry.appendChild(space);
-                            link.appendChild(pic);
-                            entry.appendChild(link);
+                                var entry = document.createElement('div'), entryText = document.createTextNode(text);
+                                var space = document.createElement('br'), link = document.createElement('a'), pic = document.createElement('img');
 
-                            document.getElementById("results").appendChild(entry);
+                                link.setAttribute('href', JSON.stringify(data.tracks[i].external_urls.spotify).replace(/^"(.*)"$/, '$1'));
+                                link.setAttribute('target', '_blank');
+                                pic.setAttribute('src', JSON.stringify(data.tracks[i].album.images[2].url).replace(/^"(.*)"$/, '$1'));
 
+                                entry.appendChild(entryText);
+                                entry.appendChild(space);
+                                link.appendChild(pic);
+                                entry.appendChild(link);
+
+                                list.appendChild(entry);
+                            }
+                            sessionStorage.removeItem('id');
                         }
-                        sessionStorage.removeItem('id');
-                    }
-                });
-            }
-        });
+                    });
+                }
+            });
+        }
+
     }
 </script>
 <div id="results">
