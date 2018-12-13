@@ -6,7 +6,7 @@ Instructions to run code:
 1. Clone this repo into a local directory
 2. In a shell, run the following command while in the project directory: node index.js
 3. Open up http://localhost:8080 on a browser
-4. Enter an artist
+4. Enter an artist and press submit
 
 Here are instructions to run node if it is not installed on your computer
 
