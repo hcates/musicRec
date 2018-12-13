@@ -4,10 +4,12 @@ let express = require("express");
 let axios = require('axios');
 let app = express();
 
+// Route browser to index.html
 app.get('/',function(req,res) {
     res.sendFile(__dirname + '/index.html');
 });
 
+// Send the Spotify access token in response to client ajax request
 app.get('/token', function(req,res) {
     var auth = 'Basic ' + Buffer.from('9e5a220335ce4a0f84976771850e0c55:61254f20eea94b1ba1b79234ce60b83f').toString('base64');
 
