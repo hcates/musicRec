@@ -1,3 +1,5 @@
+/* Copyright Harrison Cates & Arturo Perez @2018 - All rights reserved */
+
 let express = require("express");
 let axios = require('axios');
 let app = express();
@@ -25,6 +27,7 @@ app.get('/token', function(req,res) {
         })
         .catch(function(error) {
             console.log("Token Not Received.");
+            console.log(error);
         });
 });
 
