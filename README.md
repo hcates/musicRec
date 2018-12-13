@@ -19,3 +19,5 @@ Here are the instructions to download and run this code:
 4. Enter an artist and press submit
 
 Written by Harrison Cates & Arturo Perez
+
+https://github.com/hcates/musicRec
