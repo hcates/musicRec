@@ -1,4 +1,4 @@
-/* Copyright Harrison Cates & Arturo Perez @2018 - All rights reserved */
+/* Harrison Cates & Arturo Perez */
 
 let express = require("express");
 let axios = require('axios');
