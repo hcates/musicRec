@@ -21,7 +21,7 @@ app.get('/token', function(req,res) {
     })
         .then(function(response) {
             console.log("Token Received.");
-            res.send(response.data.access_token);
+            res.status(200).send(response.data.access_token);
         })
         .catch(function(error) {
             console.log("Token Not Received.");

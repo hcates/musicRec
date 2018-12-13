@@ -5,99 +5,64 @@
     <title>tunes4you</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
-<body>
+<body onload="getToken()">
+<h5>
+    Welcome to tunes4you! <br>
+    Get song recommendations based off of your favorite artists!
+</h5>
 <div>
-    Enter up to three artists:
+    Enter an artist:
 </div>
-<br>
 <form id="recForm">
     Artist 1:<br>
     <input type="text" name="artistOne"><br>
-    Artist 2:<br>
-    <input type="text" name="artistTwo"><br>
-    Artist 3: <br>
-    <input type="text" name="artistThree"><br>
-    <br>
     <input type="button" onclick="onSubmit()" value="Submit">
 </form>
-<br>
+<div>Results (Artist - Album - Song):</div>
 <script>
-    function onSubmit() {
-
-        let token = "Bearer ";
+    function getToken() {
         $.ajax({
             url: "/token",
             method: "GET",
             async: "false",
             success: function(data) {
-                token = token + data;
+                sessionStorage.setItem('token', data);
             }
         });
+    }
 
-        let a1 = document.getElementsByName("artistOne")[0].value;
-        let a2 = document.getElementsByName("artistTwo")[0].value;
-        let a3 = document.getElementsByName("artistThree")[0].value;
-        let seedString = "";
-
+    function onSubmit() {
         $.ajax({
-            url: "https://api.spotify.com/v1/search?q=" + a1 + "%20&type=artist",
+            url: "https://api.spotify.com/v1/search?q=" + document.getElementsByName("artistOne")[0].value + "%20&type=artist",
             method: "GET",
-            headers: {
-                "Authorization": token
-            },
             async: "false",
+            headers: {
+                "Authorization": "Bearer " + sessionStorage.getItem('token')
+            },
             success: function (data) {
-                a1 = data.artists.items[0].id;
-                seedString = a1;
-                alert("one: " + seedString);
+                sessionStorage.setItem('id', data.artists.items[0].id);
+                $.ajax({
+                    url: "https://api.spotify.com/v1/recommendations?limit=5&seed_artists=" + sessionStorage.getItem('id'),
+                    method: "GET",
+                    async: "false",
+                    headers: {
+                        "Authorization": "Bearer " + sessionStorage.getItem('token')
+                    },
+                    success: function (data) {
+                        for (i = 0; i < 5; i++) {
+                            var entry = document.createElement('li');
+                            var text = JSON.stringify(data.tracks[i].album.artists[0].name) + " - " +
+                                JSON.stringify(data.tracks[i].album.name) + " - " +
+                                JSON.stringify(data.tracks[i].name);
+                            var entryText = document.createTextNode(text);
+                            entry.appendChild(entryText);
+                            document.getElementById("results").appendChild(entry);
+                        }
+                        sessionStorage.removeItem('id');
+                    }
+                });
             }
         });
-
-        $.ajax({
-            url: "https://api.spotify.com/v1/search?q=" + a2 + "%20&type=artist",
-            method: "GET",
-            headers: {
-                "Authorization": token
-            },
-            async: "false",
-            success: function (data) {
-                a2 = data.artists.items[0].id;
-                seedString = seedString + "," + a2;
-                alert("two: " + seedString);
-            }
-        });
-
-        $.ajax({
-            url: "https://api.spotify.com/v1/search?q=" + a3 + "%20&type=artist",
-            method: "GET",
-            headers: {
-                "Authorization": token
-            },
-            async: "false",
-            success: function (data) {
-                a3 = data.artists.items[0].id;
-                seedString = seedString + "," + a3;
-                alert("three: " + seedString);
-            }
-        });
-
-        // $.ajax({
-        //     url: "https://api.spotify.com/v1/recommendations?seed_artists=" + seedString,
-        //     method: "GET",
-        //     headers: {
-        //         "Authorization": token
-        //     },
-        //     async: "false",
-        //     success: function (data) {
-        //         let list = document.getElementById("results");
-        //         for (i = 0; i < 20; i++) {
-        //             var entry = document.createElement('li');
-        //             entry.innerHTML(data[0][i].name);
-        //             list.appendChild(entry);
-        //         }
-        //     }
-        // });
-
     }
 </script>
 <ol id="results">
